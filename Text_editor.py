@@ -7,6 +7,7 @@ from tkinter import simpledialog
 from tkinter import messagebox
 from tkinter.filedialog import *
 from tkinter.messagebox import *
+
 def open_file():
     text.delete(1.0, END)
     file = askopenfile()
@@ -30,19 +31,24 @@ def save_file():
 
 
 
-
-
 root = Tk()
 root.title('Matewriter')
 root.geometry("1920x1080")
 #верхнее меню
 mainmenu = Menu(root)
 root.config(menu=mainmenu)
+text = Text(root)
+
+def new_file():
+   text.pack(fill=BOTH, expand=True)
+
 #файл меню
 filemenu = Menu(mainmenu, tearoff=0)
 filemenu.add_command(label="Открыть...", command=open_file)
-filemenu.add_command(label="Новый")
+filemenu.add_command(label="Новый", command=new_file)
 filemenu.add_command(label="Сохранить...",command=save_file)
+filemenu.add_command(label='Сохранить как...',command=save_as_file)
+
 filemenu.add_separator()
 filemenu.add_command(label="Выход", )
 #файл меню///
@@ -54,16 +60,16 @@ helpmenu.add_command(label="О программе")
 mainmenu.add_cascade(label="Файл",menu=filemenu)
 mainmenu.add_cascade(label="Справка",menu=helpmenu)
 #верхнее меню///
-text = Text(root)
+
 #scrollbar text
 scroll = Scrollbar(root)
 scroll.pack(side='right', fill='y')
 scroll['command'] = text.yview
 text['yscrollcommand'] = scroll.set
-file_name = Label(root, text="Здесь будет имя открытого файла")
+file_name = Label(root, text="")
 file_name.pack()
 scroll.pack(side='right', fill='y')
-text.pack(fill=BOTH, expand=True)
+
 #scrollbar text///
 root.mainloop()
 

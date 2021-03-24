@@ -7,7 +7,7 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
-
+from PySide6 import QtGui
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
@@ -34,7 +34,15 @@ class Ui_MainWindow(object):
         self.newfile_action.setObjectName(u"newfile_action")
         self.save_action = QAction(MainWindow)
         self.save_action.setObjectName(u"save_action")
-        self.save_action.triggered.connect(OpenFile)
+
+        def file_save():
+            name = QFileDialog.getSaveFileName(self, 'Save File')[0]
+            file = open(name, 'w')
+            text = self.textEdit.toPlainText()
+            file.write(text)
+            file.close()
+
+        self.save_action.triggered.connect(file_save)
         self.saveas_action = QAction(MainWindow)
         self.saveas_action.setObjectName(u"saveas_action")
         self.exit_action = QAction(MainWindow)

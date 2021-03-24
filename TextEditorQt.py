@@ -12,6 +12,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.settings = QSettings('My company', 'myApp')
 
+
+
+
+        def OpenFile():
+            fname = QFileDialog.getOpenFileName(self, 'Open file')[0]
+
+            f = open(fname, 'r')
+            with f:
+                data = f.read()
+                self.textEdit.setText(data)
+
+
+
+
+        def file_save():
+            name = QFileDialog.getSaveFileName(self, 'Save File')[0]
+            file = open(name, 'w')
+            text = self.textEdit.toPlainText()
+            file.write(text)
+            file.close()
+
+
+
+        self.open_action.triggered.connect(OpenFile)
+        self.save_action.triggered.connect(file_save)
         windowScreenGeometry = self.settings.value("windowScreenGeometry")
         windowScreenState = self.settings.value("windowScreenState")
 
@@ -23,6 +48,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if windowScreenState:
             self.restoreState(windowScreenState)
+
+
+
+
 
     def closeEvent(self, e):
         # Write window size and position to config file

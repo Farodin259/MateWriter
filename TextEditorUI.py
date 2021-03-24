@@ -20,29 +20,10 @@ class Ui_MainWindow(object):
         MainWindow.resize(785, 525)
         self.open_action = QAction(MainWindow)
         self.open_action.setObjectName(u"open_action")
-
-        def OpenFile():
-            fname = QFileDialog.getOpenFileName(self, 'Open file')[0]
-
-            f = open(fname, 'r')
-            with f:
-                data = f.read()
-                self.textEdit.setText(data)
-
-        self.open_action.triggered.connect(OpenFile)
         self.newfile_action = QAction(MainWindow)
         self.newfile_action.setObjectName(u"newfile_action")
         self.save_action = QAction(MainWindow)
         self.save_action.setObjectName(u"save_action")
-
-        def file_save():
-            name = QFileDialog.getSaveFileName(self, 'Save File')[0]
-            file = open(name, 'w')
-            text = self.textEdit.toPlainText()
-            file.write(text)
-            file.close()
-
-        self.save_action.triggered.connect(file_save)
         self.saveas_action = QAction(MainWindow)
         self.saveas_action.setObjectName(u"saveas_action")
         self.exit_action = QAction(MainWindow)

@@ -7,7 +7,7 @@
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
-
+from PySide6 import QtGui
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
@@ -18,16 +18,27 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(800, 600)
-        self.action = QAction(MainWindow)
-        self.action.setObjectName(u"action")
-        self.action_2 = QAction(MainWindow)
-        self.action_2.setObjectName(u"action_2")
-        self.action_3 = QAction(MainWindow)
-        self.action_3.setObjectName(u"action_3")
-        self.action_4 = QAction(MainWindow)
-        self.action_4.setObjectName(u"action_4")
-        self.action_6 = QAction(MainWindow)
-        self.action_6.setObjectName(u"action_6")
+        self.open_action = QAction(MainWindow)
+        self.open_action.setObjectName(u"open_action")
+        def OpenFile():
+            fname = QFileDialog.getOpenFileName(self, 'Open file')[0]
+
+            f = open(fname, 'r')
+            with f:
+                data = f.read()
+                self.textEdit.setText(data)
+
+        self.open_action.triggered.connect(OpenFile)
+        self.newfile_action = QAction(MainWindow)
+        self.newfile_action.setObjectName(u"newfile_action")
+        self.save_action = QAction(MainWindow)
+        self.save_action.setObjectName(u"save_action")
+        self.save_action.triggered.connect(OpenFile)
+        self.saveas_action = QAction(MainWindow)
+        self.saveas_action.setObjectName(u"saveas_action")
+        self.exit_action = QAction(MainWindow)
+        self.exit_action.setObjectName(u"exit_action")
+        self.exit_action.triggered.connect(QApplication.quit)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.textEdit = QTextEdit(self.centralwidget)
@@ -45,12 +56,12 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menu.menuAction())
-        self.menu.addAction(self.action)
-        self.menu.addAction(self.action_2)
-        self.menu.addAction(self.action_3)
-        self.menu.addAction(self.action_4)
+        self.menu.addAction(self.open_action)
+        self.menu.addAction(self.newfile_action)
+        self.menu.addAction(self.save_action)
+        self.menu.addAction(self.saveas_action)
         self.menu.addSeparator()
-        self.menu.addAction(self.action_6)
+        self.menu.addAction(self.exit_action)
 
         self.retranslateUi(MainWindow)
 
@@ -59,11 +70,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.action.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043a\u0440\u044b\u0442\u044c", None))
-        self.action_2.setText(QCoreApplication.translate("MainWindow", u"\u041d\u043e\u0432\u044b\u0439", None))
-        self.action_3.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
-        self.action_4.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u043a\u0430\u043a...", None))
-        self.action_6.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0445\u043e\u0434", None))
+        self.open_action.setText(QCoreApplication.translate("MainWindow", u"\u041e\u0442\u043a\u0440\u044b\u0442\u044c", None))
+        self.newfile_action.setText(QCoreApplication.translate("MainWindow", u"\u041d\u043e\u0432\u044b\u0439", None))
+        self.save_action.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c", None))
+        self.saveas_action.setText(QCoreApplication.translate("MainWindow", u"\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u043a\u0430\u043a...", None))
+        self.exit_action.setText(QCoreApplication.translate("MainWindow", u"\u0412\u044b\u0445\u043e\u0434", None))
         self.menu.setTitle(QCoreApplication.translate("MainWindow", u"\u0424\u0430\u0439\u043b", None))
     # retranslateUi
 

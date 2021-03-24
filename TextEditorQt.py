@@ -1,5 +1,6 @@
+from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
-from TextEditorUI import Ui_MainWindow, QFont, QMainWindow  # импорт нашего сгенерированного файла
+from TextEditorUI import Ui_MainWindow, QFont, QMainWindow, QAction  # импорт нашего сгенерированного файла
 import sys
 
 
@@ -10,9 +11,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
 
+
 if __name__ == "__main__":
+
     app = QApplication(sys.argv)
-    app.setFont(QFont("Roboto", 10, QFont.Normal))
     window = MainWindow()
     window.show()
+
     sys.exit(app.exec_())

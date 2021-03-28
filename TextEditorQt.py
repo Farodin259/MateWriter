@@ -1,3 +1,5 @@
+#pyside6-uic TextEditor.ui -o TextEditorUI.py
+
 from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
 from TextEditorUI import Ui_MainWindow, QFont, QMainWindow, QAction  # импорт нашего сгенерированного файла
@@ -15,14 +17,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-        def OpenFile():
+        def open_file():
             fname = QFileDialog.getOpenFileName(self, 'Open file')[0]
 
             f = open(fname, 'r')
             with f:
                 data = f.read()
                 self.textEdit.setText(data)
-
 
 
 
@@ -35,8 +36,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-        self.open_action.triggered.connect(OpenFile)
+        self.exit_action.triggered.connect(QApplication.quit)
         self.save_action.triggered.connect(file_save)
+        self.open_action.triggered.connect(open_file)
+        self.open_action.setShortcut('Ctrl+O')
+        self.newfile_action.setShortcut('Ctrl+N')
+        self.save_action.setShortcut('Ctrl+S')
         windowScreenGeometry = self.settings.value("windowScreenGeometry")
         windowScreenState = self.settings.value("windowScreenState")
 

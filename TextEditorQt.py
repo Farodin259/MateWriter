@@ -7,30 +7,12 @@ import sys
 
 file_path = None
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.settings = QSettings('My company', 'myApp')
-
-
-        def closeEvent(self, e):
-            if not self.textEdit.document().isModified():
-                return
-            answer = QMessageBox.question(
-                window, None,
-                "You have unsaved changes. Save before closing?",
-                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
-            )
-            if answer & QMessageBox.Save:
-                from Tools.pynche.pyColorChooser import save
-                save()
-            elif answer & QMessageBox.Cancel:
-                e.ignore()
-
-
-
-        # TODO сохранять в файл который созданимм в new_file
 
         def new_file(e):
             if not self.textEdit.document().isModified():
@@ -44,7 +26,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 file_save()
             elif answer & QMessageBox.Cancel:
                 e.ignore()
-
 
         def open_file():
             global file_path
@@ -62,18 +43,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.textEdit.document().setModified(False)
 
-
-
         def save_as():
             global file_path
             path = QFileDialog.getSaveFileName(window, "Save As")[0]
             if path:
                 file_path = path
                 file_save()
-
-
-
-
 
         self.exit_action.triggered.connect(QApplication.quit)
         self.save_action.triggered.connect(file_save)

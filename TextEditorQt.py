@@ -32,13 +32,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # TODO сохранять в файл который созданимм в new_file
 
-        def new_file():
-            f = open('Новый файл.txt', 'x')
-
-
-            with f:
-                data = f.read()
-                self.textEdit.setText(data)
+        def new_file(e):
+            if not self.textEdit.document().isModified():
+                return
+            answer = QMessageBox.question(
+                window, None,
+                "У вас есть носохраненные изменения. Сохранить перед закрытием?",
+                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+            )
+            if answer & QMessageBox.Save:
+                file_save()
+            elif answer & QMessageBox.Cancel:
+                e.ignore()
 
 
         def open_file():

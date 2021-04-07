@@ -3,64 +3,34 @@ from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
 from TextEditorUI import Ui_MainWindow, QFont, QMainWindow, QAction  # импорт нашего сгенерированного файла
 from PySide6.QtCore import QSettings, QPoint, QSize
-import sys
 
-file_path = None
+
+
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+
         self.setupUi(self)
-        self.settings = QSettings('My company', 'myApp')
+        self.curFile = ''
+        self.setCurrentFile('')
 
-        def new_file(e):
-            if not self.textEdit.document().isModified():
-                return
-            answer = QMessageBox.question(
-                window, None,
-                "У вас есть носохраненные изменения. Сохранить перед закрытием?",
-                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
-            )
-            if answer & QMessageBox.Save:
-                file_save()
-            elif answer & QMessageBox.Cancel:
-                e.ignore()
+        self.textEdit.document().contentsChanged.connect(self.documentWasModified)
 
-        def open_file():
-            global file_path
-            path = QFileDialog.getOpenFileName(window, "Open")[0]
-            if path:
-                self.textEdit.setPlainText(open(path).read())
-                file_path = path
-
-        def file_save():
-            if file_path is None:
-                save_as()
-            else:
-                with open(file_path, "w") as f:
-                    f.write(self.textEdit.toPlainText())
-
-                self.textEdit.document().setModified(False)
-
-        def save_as():
-            global file_path
-            path = QFileDialog.getSaveFileName(window, "Save As")[0]
-            if path:
-                file_path = path
-                file_save()
-
+        self.setCurrentFile('')
+        self.settings = QSettings('Matewriter', 'Matewriter')
         self.exit_action.triggered.connect(QApplication.quit)
-        self.save_action.triggered.connect(file_save)
-        self.open_action.triggered.connect(open_file)
-        self.newfile_action.triggered.connect(new_file)
-        self.saveas_action.triggered.connect(save_as)
+        self.save_action.triggered.connect(self.save)
+        self.open_action.triggered.connect(self.open)
+        self.newfile_action.triggered.connect(self.newFile)
+        self.saveas_action.triggered.connect(self.saveAs)
         self.open_action.setShortcut('Ctrl+O')
         self.newfile_action.setShortcut('Ctrl+N')
         self.save_action.setShortcut('Ctrl+S')
+        # Конфиги окна
         windowScreenGeometry = self.settings.value("windowScreenGeometry")
         windowScreenState = self.settings.value("windowScreenState")
-
         if windowScreenGeometry:
             self.restoreGeometry(windowScreenGeometry)
 
@@ -70,16 +40,121 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if windowScreenState:
             self.restoreState(windowScreenState)
 
-    def closeEvent(self, e):
-        # Write window size and position to config file
-        self.settings.setValue("windowScreenGeometry", self.saveGeometry())
-        self.settings.setValue("windowScreenState", self.saveState())
-        e.accept()
+    def closeEvent(self, event):
+        if self.maybeSave():
+            self.writeSettings()
+            event.accept()
+        else:
+            event.ignore()
+
+    def newFile(self):
+        if self.maybeSave():
+            self.textEdit.clear()
+            self.setCurrentFile('')
+
+    def open(self):
+        if self.maybeSave():
+            fileName, _ = QFileDialog.getOpenFileName(self)
+            if fileName:
+                self.loadFile(fileName)
+
+    def save(self):
+        if self.curFile:
+            return self.saveFile(self.curFile)
+
+        return self.saveAs()
+
+    def saveAs(self):
+        fileName, _ = QFileDialog.getSaveFileName(self)
+        if fileName:
+            return self.saveFile(fileName)
+
+        return False
+
+    def documentWasModified(self):
+        self.setWindowModified(self.textEdit.document().isModified())
+
+    def createStatusBar(self):
+        self.statusBar().showMessage("Ready")
+
+    def readSettings(self):
+        settings = QSettings("MateWriter")
+        pos = settings.value("pos", QPoint(200, 200))
+        size = settings.value("size", QSize(400, 400))
+        self.resize(size)
+        self.move(pos)
+
+    def writeSettings(self):
+        settings = QSettings("MateWriter")
+        settings.setValue("pos", self.pos())
+        settings.setValue("size", self.size())
+
+    def maybeSave(self):
+        if self.textEdit.document().isModified():
+            ret = QMessageBox.warning(self, "MateWriter",
+                                      "The document has been modified.\nDo you want to save "
+                                      "your changes?",
+                                      QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
+
+            if ret == QMessageBox.Save:
+                return self.save()
+
+            if ret == QMessageBox.Cancel:
+                return False
+
+        return True
+
+    def loadFile(self, fileName):
+        file = QFile(fileName)
+        if not file.open(QFile.ReadOnly | QFile.Text):
+            QMessageBox.warning(self, "MateWriter",
+                                "Cannot read file %s:\n%s." % (fileName, file.errorString()))
+            return
+
+        inf = QTextStream(file)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        self.textEdit.setPlainText(inf.readAll())
+        QApplication.restoreOverrideCursor()
+
+        self.setCurrentFile(fileName)
+        self.statusBar().showMessage("File loaded", 2000)
+
+    def saveFile(self, fileName):
+        file = QFile(fileName)
+        if not file.open(QFile.WriteOnly | QFile.Text):
+            QMessageBox.warning(self, "MateWriter",
+                                "Cannot write file %s:\n%s." % (fileName, file.errorString()))
+            return False
+
+        outf = QTextStream(file)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        outf << self.textEdit.toPlainText()
+        QApplication.restoreOverrideCursor()
+
+        self.setCurrentFile(fileName)
+        self.statusBar().showMessage("File saved", 2000)
+        return True
+
+    def setCurrentFile(self, fileName):
+        self.curFile = fileName
+        self.textEdit.document().setModified(False)
+        self.setWindowModified(False)
+
+        if self.curFile:
+            shownName = self.strippedName(self.curFile)
+        else:
+            shownName = 'untitled.txt'
+
+        self.setWindowTitle("%s[*] - MateWriter" % shownName)
+
+    def strippedName(self, fullFileName):
+        return QFileInfo(fullFileName).fileName()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    import sys
+
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-
+    mainWindow = MainWindow()
+    mainWindow.show()
     sys.exit(app.exec_())

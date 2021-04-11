@@ -1,20 +1,22 @@
-# pyside6-uic TextEditor.ui -o TextEditorUI.py
+# pyside6-uic test.ui -o TextEditorUI.py
+from PySide6 import QtGui
 from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
-from TextEditorUI import Ui_MainWindow, QFont, QMainWindow, QAction  # импорт нашего сгенерированного файла
+from TextEditorUI import Ui_MainWindow, QMainWindow  # импорт нашего сгенерированного файла
 from PySide6.QtCore import QSettings, QPoint, QSize
-
-
+from TextEditorWindowstyle import FramelessWindow
 
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
+        self.setWindowIcon(QtGui.QIcon('icon.ico'))
 
         self.setupUi(self)
         self.curFile = ''
         self.setCurrentFile('')
+        self.createStatusBar()
 
         self.textEdit.document().contentsChanged.connect(self.documentWasModified)
 
@@ -35,12 +37,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.restoreGeometry(windowScreenGeometry)
 
         else:
-            self.resize(600, 400)
+            self.resize(600)
 
         if windowScreenState:
             self.restoreState(windowScreenState)
 
     def closeEvent(self, event):
+        self.settings.setValue("windowScreenGeometry", self.saveGeometry())
+        self.settings.setValue("windowScreenState", self.saveState())
         if self.maybeSave():
             self.writeSettings()
             event.accept()
@@ -145,7 +149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             shownName = 'untitled.txt'
 
-        self.setWindowTitle("%s[*] - MateWriter" % shownName)
+        self.setWindowTitle(" %s[*] - MateWriter" % shownName)
 
     def strippedName(self, fullFileName):
         return QFileInfo(fullFileName).fileName()
@@ -155,6 +159,15 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
-    mainWindow = MainWindow()
-    mainWindow.show()
+
+    app.setStyleSheet('Titlebar.qss')
+    w = FramelessWindow()
+
+    w.setWindowTitle('Тестовая строка заголовка')
+    w.setWindowIcon(QIcon('icon.ico'))
+
+    #    w.setWidget(MainWindow(MainWindow))       # Добавить свое окно
+    w.setWidget(MainWindow())  # !!!
+
+    w.show()
     sys.exit(app.exec_())

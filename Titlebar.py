@@ -1,4 +1,4 @@
-from PySide6.QtCore    import Qt, Signal, QPoint
+from PySide6.QtCore import Qt, Signal, QPoint, QFileInfo
 from PySide6.QtGui     import QFont, QEnterEvent, QPainter, QColor, QPen
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QSpacerItem, QSizePolicy, QPushButton)
@@ -24,6 +24,7 @@ class TitleBar(QWidget):
     def __init__(self, *args, **kwargs):
         super(TitleBar, self).__init__(*args, **kwargs)
 
+
         # Поддержка настройки фона qss
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.mPos     = None
@@ -41,6 +42,7 @@ class TitleBar(QWidget):
 
         # значок окна
         self.iconLabel = QLabel(self)
+
         self.iconLabel.setMargin(10)
 #       self.iconLabel.setScaledContents(True)
         layout.addWidget(self.iconLabel)
@@ -163,7 +165,7 @@ class FramelessWindow(QWidget):
         super(FramelessWindow, self).__init__(*args, **kwargs)
         self._pressed  = False
         self.Direction = None
-        self.resize(600, 400)
+        self.resize(762, 580)
 
         # Фон прозрачный
         self.setAttribute(Qt.WA_TranslucentBackground, True)

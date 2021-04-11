@@ -13,6 +13,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon('icon.ico'))
 
+
         self.setupUi(self)
         self.curFile = ''
         self.setCurrentFile('')
@@ -159,12 +160,14 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
+    app.setStyle('windowsvista')
 
     app.setStyleSheet('Titlebar.qss')
+    app.setStyleSheet(open("Titlebar.qss", "r").read())
     w = FramelessWindow()
 
-    w.setWindowTitle('Тестовая строка заголовка')
-    w.setWindowIcon(QIcon('icon.ico'))
+    w.setWindowTitle('MateWriter')
+    w.setWindowIcon(QIcon('icon-white.ico'))
 
     #    w.setWidget(MainWindow(MainWindow))       # Добавить свое окно
     w.setWidget(MainWindow())  # !!!

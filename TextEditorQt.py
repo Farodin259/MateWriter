@@ -4,7 +4,7 @@ from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
 from TextEditorUI import Ui_MainWindow, QMainWindow  # импорт нашего сгенерированного файла
 from PySide6.QtCore import QSettings, QPoint, QSize
-from TextEditorWindowstyle import FramelessWindow
+from Titlebar import FramelessWindow
 
 
 

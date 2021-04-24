@@ -5,8 +5,18 @@ QLabel {
 color:white;
 }
 TitleBar {
-    background-color: rgb(15,32,56);
-    color: white;
+   border-top-right-radius: 8px;
+   border-bottom-right-radius: 8px;
+   border-top-left-radius: 8px;
+   border-bottom-left-radius: 8px;
+   background-color: rgb(15,32,56);
+   color: white;
+
+}
+#buttonClose{
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+
 }
 /* Минимизировать кнопку `Максимальное выключение` Общий фон по умолчанию */
 #buttonMinimum,#buttonMaximum,#buttonClose, #buttonMy {

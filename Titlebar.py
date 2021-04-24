@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, Signal, QPoint, QFileInfo
-from PySide6.QtGui     import QFont, QEnterEvent, QPainter, QColor, QPen
+from PySide6.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen, QIcon
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QSpacerItem, QSizePolicy, QPushButton)
 
@@ -35,7 +35,9 @@ class TitleBar(QWidget):
         palette = self.palette()
         palette.setColor(palette.Window, QColor(240, 240, 240))
         self.setPalette(palette)
-
+        # Подключение стиля
+        self.setStyleSheet('Titlebar.qss')
+        self.setStyleSheet(open("Titlebar.qss", "r").read())
         # макет
         layout = QHBoxLayout(self, spacing=0)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -55,16 +57,16 @@ class TitleBar(QWidget):
 
         # Средний телескопический бар
         layout.addSpacerItem(QSpacerItem(
-            40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+            40, 100, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # Использовать шрифты Webdings для отображения значков
         font = self.font() or QFont()
         font.setFamily('Webdings')
 
 
-        # Своя Кнопка ++++++++++++++++++++++++++
-        self.buttonMy = QPushButton(
-            '@', self, clicked=self.showButtonMy, font=font, objectName='buttonMy')
+        # Своя Кнопка
+        self.buttonMy = QPushButton(self, clicked=self.showButtonMy,  objectName='buttonMy')
+        self.buttonMy.setIcon(QIcon('icon-white.ico'))
         layout.addWidget(self.buttonMy)
 
 
@@ -183,6 +185,7 @@ class FramelessWindow(QWidget):
         # Панель заголовка
         self.titleBar = TitleBar(self)
         layout.addWidget(self.titleBar)
+
 
         # слот сигнала
         self.titleBar.windowMinimumed.connect(self.showMinimized)

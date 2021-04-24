@@ -3,7 +3,7 @@ from PySide6 import QtGui
 from TextEditorUI import *
 from PySide6.QtWidgets import QApplication
 from TextEditorUI import Ui_MainWindow, QMainWindow  # импорт нашего сгенерированного файла
-from PySide6.QtCore import QSettings, QPoint, QSize
+from PySide6.QtCore import QSettings, QPoint, QSize, QFile
 from Titlebar import FramelessWindow
 
 
@@ -161,16 +161,10 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     app.setStyle('windowsvista')
-
-    app.setStyleSheet('Titlebar.qss')
-    app.setStyleSheet(open("Titlebar.qss", "r").read())
     w = FramelessWindow()
-
     w.setWindowTitle('MateWriter')
     w.setWindowIcon(QIcon('icon-white.ico'))
-
     #    w.setWidget(MainWindow(MainWindow))       # Добавить свое окно
     w.setWidget(MainWindow())  # !!!
-
     w.show()
     sys.exit(app.exec_())

@@ -1,12 +1,10 @@
 from PySide6.QtCore import Qt, Signal, QPoint, QFileInfo
-from PySide6.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen, QIcon
+from PySide6.QtGui import QFont, QEnterEvent, QPainter, QColor, QPen, QIcon, QFontDatabase
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-                             QSpacerItem, QSizePolicy, QPushButton)
-
+                               QSpacerItem, QSizePolicy, QPushButton)
 
 
 class TitleBar(QWidget):
-
     # Сигнал минимизации окна
     windowMinimumed = Signal()
     # увеличить максимальный сигнал окна
@@ -20,15 +18,13 @@ class TitleBar(QWidget):
     # Сигнал Своя Кнопка +++
     signalButtonMy = Signal()
 
-
     def __init__(self, *args, **kwargs):
         super(TitleBar, self).__init__(*args, **kwargs)
 
-
         # Поддержка настройки фона qss
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.mPos     = None
-        self.iconSize = 20                     # Размер значка по умолчанию
+        self.mPos = None
+        self.iconSize = 20  # Размер значка по умолчанию
 
         # Установите цвет фона по умолчанию, иначе он будет прозрачным из-за влияния родительского окна
         self.setAutoFillBackground(True)
@@ -39,21 +35,31 @@ class TitleBar(QWidget):
         self.setStyleSheet('Titlebar.qss')
         self.setStyleSheet(open("Titlebar.qss", "r").read())
         # макет
-        layout = QHBoxLayout(self, spacing=0)
+        layout = QHBoxLayout(self)
+        layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
 
         # значок окна
-        self.iconLabel = QLabel(self)
-
-        self.iconLabel.setMargin(10)
-#       self.iconLabel.setScaledContents(True)
-        layout.addWidget(self.iconLabel)
 
 
         # название окна
         self.titleLabel = QLabel(self)
         self.titleLabel.setMargin(2)
-        layout.addWidget(self.titleLabel)
+        self.font_id = QFontDatabase.addApplicationFont("Roboto/Roboto-Bold.ttf")
+        font = QFont("Roboto-Bold", 12)
+        font.setFamily(u"Roboto")
+        font.setBold(True)
+        self.buttonMy = QPushButton(self, clicked=self.showButtonMy, objectName='buttonMy')
+        self.buttonMy.setIcon(QIcon('icon-white.ico'))
+
+        layout.addWidget(self.buttonMy)
+        layout.addStretch()
+
+        self.titleLabel.setFont(font)
+
+        layout.addStretch()
+        layout.addWidget(self.titleLabel, alignment=Qt.AlignCenter)
+
 
         # Средний телескопический бар
         layout.addSpacerItem(QSpacerItem(
@@ -63,12 +69,7 @@ class TitleBar(QWidget):
         font = self.font() or QFont()
         font.setFamily('Webdings')
 
-
         # Своя Кнопка
-        self.buttonMy = QPushButton(self, clicked=self.showButtonMy,  objectName='buttonMy')
-        self.buttonMy.setIcon(QIcon('icon-white.ico'))
-        layout.addWidget(self.buttonMy)
-
 
         # Свернуть кнопку
         self.buttonMinimum = QPushButton(
@@ -159,15 +160,14 @@ Left, Top, Right, Bottom, LeftTop, RightTop, LeftBottom, RightBottom = range(8)
 
 
 class FramelessWindow(QWidget):
-
     # Четыре периметра
     Margins = 5
 
     def __init__(self, *args, **kwargs):
         super(FramelessWindow, self).__init__(*args, **kwargs)
-        self._pressed  = False
+        self._pressed = False
         self.Direction = None
-        self.resize(762, 580)
+        self.resize(760, 580)
 
         # Фон прозрачный
         self.setAttribute(Qt.WA_TranslucentBackground, True)
@@ -178,14 +178,14 @@ class FramelessWindow(QWidget):
         self.setMouseTracking(True)
 
         # макет
-        layout = QVBoxLayout(self, spacing=0)
+        layout = QVBoxLayout(self)
+        layout.setSpacing(0)
         # Зарезервировать границы для изменения размера окна без полей
         layout.setContentsMargins(
             self.Margins, self.Margins, self.Margins, self.Margins)
         # Панель заголовка
         self.titleBar = TitleBar(self)
         layout.addWidget(self.titleBar)
-
 
         # слот сигнала
         self.titleBar.windowMinimumed.connect(self.showMinimized)
@@ -318,53 +318,53 @@ class FramelessWindow(QWidget):
         xPos, yPos = mpos.x(), mpos.y()
         geometry = self.geometry()
         x, y, w, h = geometry.x(), geometry.y(), geometry.width(), geometry.height()
-        if self.Direction == LeftTop:          # Верхний левый угол
+        if self.Direction == LeftTop:  # Верхний левый угол
             if w - xPos > self.minimumWidth():
                 x += xPos
                 w -= xPos
             if h - yPos > self.minimumHeight():
                 y += yPos
                 h -= yPos
-        elif self.Direction == RightBottom:    # Нижний правый угол
+        elif self.Direction == RightBottom:  # Нижний правый угол
             if w + xPos > self.minimumWidth():
                 w += xPos
                 self._mpos = pos
             if h + yPos > self.minimumHeight():
                 h += yPos
                 self._mpos = pos
-        elif self.Direction == RightTop:       # верхний правый угол
+        elif self.Direction == RightTop:  # верхний правый угол
             if h - yPos > self.minimumHeight():
                 y += yPos
                 h -= yPos
             if w + xPos > self.minimumWidth():
                 w += xPos
                 self._mpos.setX(pos.x())
-        elif self.Direction == LeftBottom:     # Нижний левый угол
+        elif self.Direction == LeftBottom:  # Нижний левый угол
             if w - xPos > self.minimumWidth():
                 x += xPos
                 w -= xPos
             if h + yPos > self.minimumHeight():
                 h += yPos
                 self._mpos.setY(pos.y())
-        elif self.Direction == Left:            # Влево
+        elif self.Direction == Left:  # Влево
             if w - xPos > self.minimumWidth():
                 x += xPos
                 w -= xPos
             else:
                 return
-        elif self.Direction == Right:           # Право
+        elif self.Direction == Right:  # Право
             if w + xPos > self.minimumWidth():
                 w += xPos
                 self._mpos = pos
             else:
                 return
-        elif self.Direction == Top:             # выше
+        elif self.Direction == Top:  # выше
             if h - yPos > self.minimumHeight():
                 y += yPos
                 h -= yPos
             else:
                 return
-        elif self.Direction == Bottom:          # ниже
+        elif self.Direction == Bottom:  # ниже
             if h + yPos > self.minimumHeight():
                 h += yPos
                 self._mpos = pos

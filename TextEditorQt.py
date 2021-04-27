@@ -12,6 +12,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon('icon.ico'))
+        self.font_id = QFontDatabase.addApplicationFont("Roboto/Roboto-Bold.ttf")
+        if self.font_id == -1:
+            QMessageBox.warning(self, "Внимание", "Пользовательский шрифт не был найден!")
 
 
         self.setupUi(self)
